@@ -1,0 +1,12 @@
+
+
+# Package Files #
+
+*.war
+*.ear
+*.properties
+/dist/
+
+*.properties
+
+/nbproject/private/private.properties
