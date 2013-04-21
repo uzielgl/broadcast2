@@ -48,7 +48,7 @@ private DatagramSocket datagramSocket(){
 
 private void startMic() {
     try {
-        format = new AudioFormat(8000.0F, 16, 1, true, false);
+        format = new AudioFormat(16000.0F, 16, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         mic = (TargetDataLine) AudioSystem.getLine(info);
         mic.open(format);
@@ -93,6 +93,7 @@ public void run() {
     startMic();
     while (transmitting) {
        enviarAudioAProcesos();
+       //sleep(10);
     }  
 }
 

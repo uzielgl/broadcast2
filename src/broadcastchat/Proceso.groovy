@@ -11,6 +11,10 @@ import javax.swing.ImageIcon
 import javax.swing.Icon
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.Clip
+import javax.sound.sampled.*;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 
 import javax.sound.sampled.*;
 /**
@@ -31,7 +35,7 @@ class Proceso implements ComunicadorListener{
     public Texto texto = new Texto();
     public Audio audio = new Audio();
     
-    
+   // AudioFormat format = getAudioFormat();
     
     
     public int pos = -1; //Define la posicíón que tiene este vector en el vt
@@ -128,7 +132,7 @@ class Proceso implements ComunicadorListener{
         int tk = message.estructura[1];
         def hm = message.estructura[2];
         
-        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm) ) ){ //Aquí duda con el +1 preguntar
+        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm) || true) ){ //Aquí duda con el +1 preguntar
             println "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
             window.addHistory("Esperando mensaje de p" + ( k + 1) );
             addColaMensaje( message );
@@ -190,7 +194,31 @@ class Proceso implements ComunicadorListener{
         }
         else if(m.tipo == Mensaje.TIPO_AUDIO){
             
-            AudioFormat format = new AudioFormat(8000.0F, 16, 1, true, false);
+            AudioFormat format = new AudioFormat(16000.0F, 16, 1, true, false);
+            try {
+                System.out.println("Listening for incoming sound");
+                DataLine.Info speakerInfo = new DataLine.Info(SourceDataLine.class, format);
+                SourceDataLine speaker = (SourceDataLine) AudioSystem.getLine(speakerInfo);
+                speaker.open(format);
+                speaker.start();                
+               
+                    byte[] data = m.audio;
+                    //baos.reset();
+                    ByteArrayInputStream bais = new ByteArrayInputStream(data);
+                    AudioInputStream ais = new AudioInputStream(bais,format,data.length);
+                    int numBytesRead = 0;
+                    if ((numBytesRead = ais.read(data)) != -1) speaker.write(data, 0, numBytesRead);
+                    ais.close();
+                    bais.close();
+                
+                //speaker.drain();
+                //speaker.close();
+                System.out.println("Stopped listening for incoming sound");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+           /* AudioFormat format = new AudioFormat(16000.0F, 16, 1, true, false);
             //reproducir Audio
             ByteArrayInputStream oInstream = new ByteArrayInputStream(m.audio);
             AudioInputStream oAIS = AudioSystem.getAudioInputStream(oInstream, format, m.audio.length );
@@ -202,7 +230,7 @@ class Proceso implements ComunicadorListener{
         }catch(Exception ex){
                 System.out.println("Error with playing sound.");
                 ex.printStackTrace();
-        }
+        }*/
         }
     }
     
