@@ -44,7 +44,8 @@ class Proceso implements ComunicadorListener{
     public ci = [];
     
     public cola_mensajes = []; // Arraylist que contiene instancias de Mensaje
-    
+    SourceDataLine speaker;
+    AudioFormat format ;
     public Proceso(){
         ip = Util.getLocalIp();
         String[] exp = ip.split("\\.");
@@ -56,6 +57,14 @@ class Proceso implements ComunicadorListener{
         comunicador.udpServer.listeners.add(this);
         
         video.comunicador = comunicador;
+        
+         format = new AudioFormat(16000.0F, 16, 1, true, false);
+          
+                System.out.println("Listening for incoming sound");
+                DataLine.Info speakerInfo = new DataLine.Info(SourceDataLine.class, format);
+                speaker = (SourceDataLine) AudioSystem.getLine(speakerInfo);
+                speaker.open(format);
+                speaker.start();    
     }
     
     public Proceso(int id, String ip, int port){ //Un constructor sencillo para poder tener una lista de procesos
@@ -67,6 +76,14 @@ class Proceso implements ComunicadorListener{
         comunicador.udpServer.listeners.add(this);
         
         video.comunicador = comunicador;
+        
+                 format = new AudioFormat(16000.0F, 16, 1, true, false);
+          
+                System.out.println("Listening for incoming sound");
+                DataLine.Info speakerInfo = new DataLine.Info(SourceDataLine.class, format);
+                speaker = (SourceDataLine) AudioSystem.getLine(speakerInfo);
+                speaker.open(format);
+                speaker.start();    
     }
     
     public String toString(){
@@ -156,7 +173,7 @@ class Proceso implements ComunicadorListener{
     }
     
     /** Pone a null el mensaje que se le pasa de la cola de mensajes*/
-    public eliminaDeCola(message){
+    public synchronized eliminaDeCola(message){
         for( def x = 0 ; x< cola_mensajes.size(); x++ ){
             def m = cola_mensajes[x];
             if( m == null ) continue;
@@ -194,13 +211,10 @@ class Proceso implements ComunicadorListener{
         }
         else if(m.tipo == Mensaje.TIPO_AUDIO){
             
-            AudioFormat format = new AudioFormat(16000.0F, 16, 1, true, false);
+           
             try {
                 System.out.println("Listening for incoming sound");
-                DataLine.Info speakerInfo = new DataLine.Info(SourceDataLine.class, format);
-                SourceDataLine speaker = (SourceDataLine) AudioSystem.getLine(speakerInfo);
-                speaker.open(format);
-                speaker.start();                
+                           
                
                     byte[] data = m.audio;
                     //baos.reset();
@@ -235,7 +249,7 @@ class Proceso implements ComunicadorListener{
     }
     
     /** Ingresa mensajes no repetidos a la cola*/
-    public addColaMensaje( message ){
+    public synchronized  addColaMensaje( message ){
         Iterator it = cola_mensajes.iterator();
         def add = true;
         while( it.hasNext() ){
