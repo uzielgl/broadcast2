@@ -16,23 +16,32 @@ public class UDPServer extends Thread{
     private String port;
     public List<ComunicadorListener> listeners = new ArrayList<ComunicadorListener>();
     
-    DatagramSocket aSocket;
+    //DatagramSocket aSocket;
+    MulticastSocket aSocket;
     
     UDPServer( String ip, String port ){
+        ip = "228.5.6.7";
+        port = "6789";
+        
         this.ip = ip;
         this.port = port;
         
         try{
-            aSocket = new DatagramSocket( Integer.parseInt( port ) );
+            aSocket = new MulticastSocket( Integer.parseInt( port ) );
+            aSocket.joinGroup( InetAddress.getByName(ip) );
         }catch (SocketException e){System.out.println("Socket: " + e.getMessage());
         }
     }
     UDPServer( String ip, int port){
+        ip = "228.5.6.7";
+        port = 6789;
+        
         this.ip = ip;
         this.port = Integer.toString( port );  
         
         try{
-            aSocket = new DatagramSocket(  port  );
+            aSocket = new MulticastSocket(  port  );
+            aSocket.joinGroup( InetAddress.getByName(ip) );
         }catch (SocketException e){System.out.println("Socket: " + e.getMessage());
         }
     }
@@ -72,7 +81,7 @@ public class UDPServer extends Thread{
     public void run(){
         Thread t = new Thread(new ServerSocketThread());
         t.start();
-        Thread t2 = new Thread(new ServerSocketThread());
+        /*Thread t2 = new Thread(new ServerSocketThread());
         t2.start();
         Thread t3 = new Thread(new ServerSocketThread());
         t3.start();
@@ -83,7 +92,7 @@ public class UDPServer extends Thread{
         Thread t6 = new Thread(new ServerSocketThread());
         t6.start();
         Thread t7 = new Thread(new ServerSocketThread());
-        t7.start();
+        t7.start();*/
     }
     
     public void stopServer(){

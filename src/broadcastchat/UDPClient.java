@@ -15,13 +15,33 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
+import java.net.MulticastSocket;
 /**
  *
  * @author uzielgl
  */
 public class UDPClient {
+    
+    MulticastSocket aSocket;
+    
+    public void sendMessage( Mensaje m ){
+        sendMessage( "", 0, m);
+    }
+    
+    public UDPClient(){
+        try {
+            aSocket = new MulticastSocket(6789);
+            aSocket.joinGroup( InetAddress.getByName("228.5.6.7") );
+        }catch( Exception e){
+            System.out.print(" Error en el udpclient");
+            System.out.println( e.getMessage() );
+        }
+    }
       
     public void sendMessage(String ip, int port, Mensaje m){
+        ip = "228.5.6.7";
+        port = 6789;
+        
         //Lo convertimos a bytes
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         ObjectOutputStream os;
@@ -37,12 +57,12 @@ public class UDPClient {
         
         //Y se enviamos ese arreglo en el datagrama
         try{
-            DatagramSocket aSocket = new DatagramSocket();    
+            //DatagramSocket aSocket = new DatagramSocket();    
             DatagramPacket messageOut = new DatagramPacket(messageBytes, messageBytes.length, 
                InetAddress.getByName(ip), port);
             aSocket.send( messageOut );
             
-            aSocket.close();
+            //aSocket.close();
             System.out.print("Enviando mensaje con UDP: ");
             System.out.println( m );
         }catch (SocketException e){
@@ -53,6 +73,9 @@ public class UDPClient {
     }
       
     public Mensaje sendMessageReply(String ip, int port, Mensaje m){
+        ip = "228.5.6.7";
+        port = 6789;
+        
         //Lo convertimos a bytes
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         ObjectOutputStream os;
@@ -69,7 +92,7 @@ public class UDPClient {
         
         //Y se enviamos ese arreglo en el datagrama
         try{
-            DatagramSocket aSocket = new DatagramSocket();   
+            //DatagramSocket aSocket = new DatagramSocket();   
             aSocket.setSoTimeout( 500 );
             DatagramPacket messageOut = new DatagramPacket(messageBytes, messageBytes.length, 
                InetAddress.getByName(ip), port);
@@ -90,7 +113,7 @@ public class UDPClient {
                 response_message = mensaje;
             }catch( Exception e){
             }
-            aSocket.close();
+            //aSocket.close();
             
             System.out.println( m );
         }catch (SocketException e){
