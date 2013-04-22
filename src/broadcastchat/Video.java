@@ -156,7 +156,7 @@ public class Video extends Thread{
         //File fnew = new File(image);
         m.img = capturarImagen(cont);
         m.tipo = Mensaje.TIPO_VIDEO;
-        System.out.println("mensaje video: "+m);
+        //System.out.println("mensaje video: "+m);
         proceso.difundirMensaje( m );
     }
     

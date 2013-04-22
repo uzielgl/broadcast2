@@ -29,6 +29,8 @@ class Mensaje implements Serializable{
     //
     public estructura = []; //La estructura del mensaje del vt y demás
     
+    public int count = 0;
+    
     public Mensaje( int tipo){
         this.tipo = tipo;
     }
@@ -45,6 +47,10 @@ class Mensaje implements Serializable{
             "estructura" : estructura
         ];
         return new Gson().toJson( mensaje );
+    }
+    
+    public void incCount(){
+        count++;
     }
 	
 }

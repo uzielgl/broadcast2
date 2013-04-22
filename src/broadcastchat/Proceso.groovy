@@ -115,7 +115,7 @@ class Proceso implements ComunicadorListener{
     public difundirMensaje( Mensaje m ){
         m.from = new BasicProceso( this );
         
-        window.addHistory("Mensaje a difunder", m.toString());
+        //window.addHistory("Mensaje a difunder", m.toString());
         
         comunicador.udpClient.sendMessage( m );
         
@@ -142,16 +142,18 @@ class Proceso implements ComunicadorListener{
     }
     
     //Lo puede enviar a la cola o lo puede entregar
-    public procesarMensaje( Mensaje message ){
+    public  procesarMensaje( Mensaje message ){
         if( message == null) return true;
-        window.addHistory("Recibiendo mensaje", message.toString() );
+        //window.addHistory("Recibiendo mensaje", message.toString() );
         int k = message.estructura[0];
         int tk = message.estructura[1];
         def hm = message.estructura[2];
         
-        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm)) ){ //Aquí duda con el +1 preguntar
+        window.setInfo( this.toString() );
+                
+        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm) )   ){ //Aquí duda con el +1 preguntar
             println "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
-            window.addHistory("Esperando mensaje de p" + ( k + 1) );
+            window.addHistory("Esperando mensaje de p" + ( k) + " ( " + message.from.id + ")" );
             addColaMensaje( message );
             return false;
         }else{
@@ -160,12 +162,21 @@ class Proceso implements ComunicadorListener{
             ci.add( [k, tk] );
             ci = deleteHmCi( hm, ci );
             
-            entregarMensaje( message );
-            eliminaDeCola( message );
+             eliminaDeCola( message );
+             entregarMensaje( message );
+           
             
-            for( def x = 0 ; x< cola_mensajes.size(); x++ ){
+            for( def x = 0 ; x< cola_mensajes.size(); x++ ){  //Debería de incrementar el tk, no el k (proceso)
                 def m = cola_mensajes[x];
-                procesarMensaje( message );
+                if( m != null){/*
+                    cola_mensajes[x].incCount();
+                    if( cola_mensajes[x].count > 5){
+                        println "El count > 5";
+                        VT[ m.estructura[0] ] +=2;
+                    }*/
+                    procesarMensaje( m );
+                    
+                }
             }
             
             return true;
@@ -177,13 +188,20 @@ class Proceso implements ComunicadorListener{
         for( def x = 0 ; x< cola_mensajes.size(); x++ ){
             def m = cola_mensajes[x];
             if( m == null ) continue;
-            if( m[0] == message[0] && m[1] == message[1] )
-                cola_mensajes[x] = null;
+            
+            try{
+                if( m.estructura[0] == message.estructura[0] && m.estructura[1] == message.estructura[1] )
+                    cola_mensajes[x] = null;
+            }catch( Exception e){
+                
+                println "Error en  eliminaDeCola " + e.getMessage();
+                print " Cola: " + cola_mensajes;
+            }
         }
     }
     
     public void entregarMensaje( Mensaje m){
-        window.addHistory( "Entregando mensaje", m.toString() );
+        //window.addHistory( "Entregando mensaje", m.toString() );
         def pnl;
         //Dependiendo del tipo mandamos una u otra ventana
         if( window.tipo == MainWindow.TIPO_TEXTO){
@@ -222,12 +240,12 @@ class Proceso implements ComunicadorListener{
                     AudioInputStream ais = new AudioInputStream(bais,format,data.length);
                     int numBytesRead = 0;
                     if ((numBytesRead = ais.read(data)) != -1) speaker.write(data, 0, numBytesRead);
-                   ais.close();
-                    bais.close();
+                   //ais.close();
+                    //bais.close();
                 
                 /* speaker.drain();
                 speaker.close();*/
-                System.out.println("Stopped listening for incoming sound");
+                //System.out.println("Stopped listening for incoming sound");
             } catch (Exception e) {
                 e.printStackTrace();
             }
