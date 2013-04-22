@@ -116,11 +116,10 @@ class Proceso implements ComunicadorListener{
         m.from = new BasicProceso( this );
         
         window.addHistory("Mensaje a difunder", m.toString());
-        for( BasicProceso p: procesos.procesos ){
-            if( p.id != id){
-                comunicador.udpClient.sendMessage(p.ip, p.port, m );
-            }
-        }
+        
+        comunicador.udpClient.sendMessage( m );
+        
+                   
     }
     
     //@override
@@ -137,7 +136,8 @@ class Proceso implements ComunicadorListener{
             window.addHistory("Peers", procesos.procesos.toString() );
             window.addHistory("YO", this.toString());
         }else{ //Este mensaje es de audio, video, texto, y se debe de procesar
-            procesarMensaje( m );
+            if( m.from.id != id)
+                procesarMensaje( m );
         }
     }
     
