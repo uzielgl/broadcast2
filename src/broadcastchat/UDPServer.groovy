@@ -52,7 +52,7 @@ public class UDPServer extends Thread{
             try{ 
                 System.out.println("Levantando servidor en " + ip + " " + " puerto " + port);
                 while(true){
-                    byte[] buffer = new byte[40000];
+                    byte[] buffer = new byte[50000];
                     DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                     aSocket.receive(request);
 
