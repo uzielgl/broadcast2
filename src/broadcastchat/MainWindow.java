@@ -64,9 +64,12 @@ public class MainWindow extends javax.swing.JFrame implements ComunicadorListene
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
         jToolBar2 = new javax.swing.JToolBar();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -150,6 +153,9 @@ public class MainWindow extends javax.swing.JFrame implements ComunicadorListene
         });
         jToolBar1.add(jButton5);
 
+        jLabel7.setText("Recibiendo");
+        jToolBar1.add(jLabel7);
+
         jToolBar2.setRollover(true);
 
         jLabel2.setText("Soy: ");
@@ -157,6 +163,12 @@ public class MainWindow extends javax.swing.JFrame implements ComunicadorListene
 
         jLabel3.setText("Info de proceso");
         jToolBar2.add(jLabel3);
+
+        jLabel9.setText("  ");
+        jToolBar2.add(jLabel9);
+
+        jLabel8.setText("Envi");
+        jToolBar2.add(jLabel8);
 
         jLabel6.setText("                  ");
         jToolBar2.add(jLabel6);
@@ -348,6 +360,9 @@ public class MainWindow extends javax.swing.JFrame implements ComunicadorListene
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    public javax.swing.JLabel jLabel7;
+    public javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator1;

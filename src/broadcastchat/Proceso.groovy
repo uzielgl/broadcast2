@@ -46,6 +46,21 @@ class Proceso implements ComunicadorListener{
     public cola_mensajes = []; // Arraylist que contiene instancias de Mensaje
     SourceDataLine speaker;
     AudioFormat format ;
+    
+    
+    public int mensajesEnviados = 0;
+    public mensajesRecibidos = [:];
+    
+    public addMensajeRecibido( Mensaje m ){
+        if( mensajesRecibidos.containsKey( m.from.id ) ){
+            mensajesRecibidos[m.from.id] ++;
+        }else{
+            mensajesRecibidos[m.from.id] = 1;
+        }
+        window.jLabel7.setText( mensajesRecibidos.toString() );
+    }
+    
+    
     public Proceso(){
         ip = Util.getLocalIp();
         String[] exp = ip.split("\\.");
@@ -115,6 +130,9 @@ class Proceso implements ComunicadorListener{
     public difundirMensaje( Mensaje m ){
         m.from = new BasicProceso( this );
         
+        mensajesEnviados++;
+        window.jLabel8.setText( Integer.toString( mensajesEnviados ) );
+        
         //window.addHistory("Mensaje a difunder", m.toString());
         
         comunicador.udpClient.sendMessage( m );
@@ -124,6 +142,8 @@ class Proceso implements ComunicadorListener{
     
     //@override
     public void onReceiveMessage(Mensaje m){
+        addMensajeRecibido( m );
+                
         if( m.tipo == Mensaje.TIPO_DESCUBRIMIENTO ){
             if ( procesos.add( m.from ) )
                 VT.add(0);
@@ -190,8 +210,10 @@ class Proceso implements ComunicadorListener{
             if( m == null ) continue;
             
             try{
-                if( m.estructura[0] == message.estructura[0] && m.estructura[1] == message.estructura[1] )
+                if( m.estructura[0] == message.estructura[0] && m.estructura[1] == message.estructura[1] ){
                     cola_mensajes[x] = null;
+                    println "Eliminando mensaje de la cola";
+                }
             }catch( Exception e){
                 
                 println "Error en  eliminaDeCola " + e.getMessage();
@@ -278,8 +300,10 @@ class Proceso implements ComunicadorListener{
                 break;
             }
         }
-        if( add == true) 
+        if( add == true) {
             cola_mensajes.add( message );
+            println "Agregando a la cola"
+        }
     }
     
      /** Elimina todas las tuplas de Hm que están en Ci
