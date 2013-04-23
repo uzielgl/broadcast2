@@ -170,8 +170,9 @@ class Proceso implements ComunicadorListener{
         def hm = message.estructura[2];
         
         window.setInfo( this.toString() );
-                
-        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm) )   ){ //Aquí duda con el +1 preguntar
+        if( cola_mensajes.size() != 0 )
+            println "cola de mensajes " + cola_mensajes;       
+        if( ! ( ( tk == (VT[ k ] + 1 ) ) && isCausal(VT, hm, message) )   ){ //Aquí duda con el +1 preguntar
             println "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
             window.addHistory("Esperando mensaje de p" + ( k) + " ( " + message.from.id + ")" );
             addColaMensaje( message );
@@ -188,12 +189,16 @@ class Proceso implements ComunicadorListener{
             
             for( def x = 0 ; x< cola_mensajes.size(); x++ ){  //Debería de incrementar el tk, no el k (proceso)
                 def m = cola_mensajes[x];
-                if( m != null){/*
+                if( m != null){
                     cola_mensajes[x].incCount();
+                    /*
                     if( cola_mensajes[x].count > 5){
                         println "El count > 5";
-                        VT[ m.estructura[0] ] +=2;
-                    }*/
+                        if( !m.procesoEnFallo.isEmpty() )
+                            VT[ m.procesoEnFallo[0] ] = m.procesoEnFallo[1];
+                        
+                    }
+                    */
                     procesarMensaje( m );
                     
                 }
@@ -348,7 +353,8 @@ class Proceso implements ComunicadorListener{
      * @param hm [ [2, 3], [2,4] ]
      * @return boolean  - Define si pasa o no la condición
      **/
-    public isCausal( ArrayList vt, ArrayList hm ){
+    public  procesosFallidos = [:];
+    public isCausal( ArrayList vt, ArrayList hm, Mensaje m ){
         println "vt en causal : " + vt;
         println "hm en causal : " + hm;
         Iterator it =  hm.iterator();
@@ -359,8 +365,11 @@ class Proceso implements ComunicadorListener{
             print tl + " <= " + vt[l];
             println tl <= vt[l]
             
-            if( ! ( tl <= vt[l] ) )
+            if( ! ( tl <= vt[l] ) ){
+                procesosFallidos[l] = tl ;
+                m.procesoEnFallo = [l, tl];
                 return false;
+            }
         }
         return true;
     }

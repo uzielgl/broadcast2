@@ -31,6 +31,8 @@ class Mensaje implements Serializable{
     
     public int count = 0;
     
+    public def procesoEnFallo; //Tupla con el proceso y tk algo como [l, tk] o [proceso, mensaje]
+    
     public Mensaje( int tipo){
         this.tipo = tipo;
     }
@@ -44,7 +46,8 @@ class Mensaje implements Serializable{
             "from" : from.toString(),
             "to" : to.toString(),
             "tipo" : tipo,
-            "estructura" : estructura
+            "estructura" : estructura,
+            "procesoEnFallo" : procesoEnFallo
         ];
         return new Gson().toJson( mensaje );
     }
